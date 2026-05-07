@@ -401,7 +401,23 @@ input,select,textarea{font-family:'Noto Serif TC',serif}
     <div class="scards">
       <div class="sc"><div class="sc-label">本月收入</div><div class="sc-val g" id="b-inc">NT$0</div></div>
       <div class="sc"><div class="sc-label">本月支出</div><div class="sc-val r" id="b-exp">NT$0</div></div>
-      <div class="sc"><div class="sc-label">結餘</div><div class="sc-val" id="b-bal">NT$0</div></div>
+      <div class="sc"><div class="sc-label">自然月結餘</div><div class="sc-val" id="b-bal">NT$0</div></div>
+    </div>
+    <div style="background:linear-gradient(135deg,#1a2a5a,#1a3a6a);border-radius:var(--r);padding:14px 16px;margin-bottom:20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;box-shadow:0 1px 6px rgba(26,18,8,.1)">
+      <div style="font-size:11px;color:rgba(255,255,255,.5);white-space:nowrap">💼 薪資週期<br><span style="font-family:'DM Mono',monospace;font-size:10px" id="b-cycle-label">—</span></div>
+      <div style="width:1px;height:32px;background:rgba(255,255,255,.1)"></div>
+      <div><div style="font-size:10px;color:rgba(255,255,255,.45);margin-bottom:3px">週期收入</div><div style="font-family:'DM Mono',monospace;font-size:16px;font-weight:500;color:#6ab3ff" id="b-cyc-inc">NT$0</div></div>
+      <div><div style="font-size:10px;color:rgba(255,255,255,.45);margin-bottom:3px">週期支出</div><div style="font-family:'DM Mono',monospace;font-size:16px;font-weight:500;color:#ff8a8a" id="b-cyc-exp">NT$0</div></div>
+      <div style="flex:1;min-width:120px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+          <span style="font-size:10px;color:rgba(255,255,255,.45)">週期結餘</span>
+          <span style="font-family:'DM Mono',monospace;font-size:12px;font-weight:600" id="b-cyc-bal-pct">0%</span>
+        </div>
+        <div style="height:4px;background:rgba(255,255,255,.1);border-radius:2px;overflow:hidden">
+          <div id="b-cyc-bar" style="height:100%;border-radius:2px;background:#6ab3ff;transition:width .4s;width:0%"></div>
+        </div>
+        <div style="font-family:'DM Mono',monospace;font-size:14px;font-weight:600;color:#fff;margin-top:5px" id="b-cyc-bal">NT$0</div>
+      </div>
     </div>
     <div class="sec">
       <div class="sec-head"><div class="sec-title">固定項目</div>
@@ -884,6 +900,50 @@ async function renderBudget(){
   const tI=fI+rI,tE=fE+rE,bal=tI-tE;
   document.getElementById('b-inc').textContent=fmt(tI);document.getElementById('b-exp').textContent=fmt(tE);
   const bel=document.getElementById('b-bal');bel.textContent=fmt(bal);bel.className='sc-val '+(bal>=0?'pos':'neg');
+
+  // ── Salary cycle (15th to 14th) ──
+  const SALARY_DAY=15;
+  // Figure out cycle start: if current month day >= 15, cycle started this month on 15th
+  // else cycle started last month on 15th
+  const today=new Date();
+  let cycStart,cycEnd;
+  if(bM===today.getMonth()+1&&bY===today.getFullYear()){
+    // Viewing current month
+    if(today.getDate()>=SALARY_DAY){
+      cycStart=new Date(bY,bM-1,SALARY_DAY);
+      cycEnd=new Date(bY,bM,SALARY_DAY-1); // next month 14th
+    } else {
+      cycStart=new Date(bY,bM-2,SALARY_DAY); // last month 15th
+      cycEnd=new Date(bY,bM-1,SALARY_DAY-1); // this month 14th
+    }
+  } else {
+    // Viewing past/future month — show cycle that starts on 15th of that month
+    cycStart=new Date(bY,bM-1,SALARY_DAY);
+    cycEnd=new Date(bY,bM,SALARY_DAY-1);
+  }
+  const cycS=fmtD(cycStart),cycE=fmtD(cycEnd);
+  document.getElementById('b-cycle-label').textContent=`${cycStart.getMonth()+1}/${cycStart.getDate()} – ${cycEnd.getMonth()+1}/${cycEnd.getDate()}`;
+
+  // Fetch records for cycle period (may span two months)
+  try{
+    const cycRecs=await db('GET','records','',`?date=gte.${cycS}&date=lte.${cycE}&order=date.desc`);
+    const cycFixed=(fixed||[]);
+    // For fixed items, count them once per cycle
+    const cycFI=cycFixed.filter(x=>x.type==='income').reduce((a,x)=>a+x.amount,0);
+    const cycFE=cycFixed.filter(x=>x.type==='expense').reduce((a,x)=>a+x.amount,0);
+    const cycRI=(cycRecs||[]).filter(x=>x.type==='income').reduce((a,x)=>a+x.amount,0);
+    const cycRE=(cycRecs||[]).filter(x=>x.type==='expense').reduce((a,x)=>a+x.amount,0);
+    const cycInc=cycFI+cycRI,cycExp=cycFE+cycRE,cycBal=cycInc-cycExp;
+    const cycPct=cycInc>0?Math.max(0,Math.round(cycBal/cycInc*100)):0;
+    document.getElementById('b-cyc-inc').textContent=fmt(cycInc);
+    document.getElementById('b-cyc-exp').textContent=fmt(cycExp);
+    document.getElementById('b-cyc-bal').textContent=fmt(cycBal);
+    document.getElementById('b-cyc-bal').style.color=cycBal>=0?'#fff':'#ff8a8a';
+    document.getElementById('b-cyc-bal-pct').textContent=cycPct+'%';
+    document.getElementById('b-cyc-bal-pct').style.color=cycBal>=0?'#6ab3ff':'#ff8a8a';
+    document.getElementById('b-cyc-bar').style.width=Math.min(100,cycPct)+'%';
+    document.getElementById('b-cyc-bar').style.background=cycBal>=0?'#6ab3ff':'#ff8a8a';
+  }catch(e){console.error('cycle calc error',e);}
   const fg=document.getElementById('b-fg');
   if(!fixed||!fixed.length)fg.innerHTML='<div class="empty">尚未設定固定項目</div>';
   else fg.innerHTML=fixed.map(i=>`<div class="fc"><div><div class="fc-name">${i.name}</div><div class="fc-sub">${getIcon(i.cat)} ${i.cat}</div></div><div class="fc-amt ${i.type==='income'?'g':'r'}">${i.type==='income'?'+':'-'}${fmt(i.amount)}</div></div>`).join('');
