@@ -580,7 +580,9 @@ input,select,textarea{font-family:'Noto Serif TC',serif}
     <div class="war-map">
       <div class="wm-title">⚔ 天下一統進度</div>
       <div class="wm-stats">
-        <div><div class="wm-num" id="wm-done">0</div><div class="wm-label">已攻下</div></div>
+        <div><div class="wm-num" id="wm-lec">0</div><div class="wm-label">已聽課</div></div>
+        <div class="wm-div"></div>
+        <div><div class="wm-num" id="wm-quiz">0</div><div class="wm-label">已刷題</div></div>
         <div class="wm-div"></div>
         <div><div class="wm-num" id="wm-total">0</div><div class="wm-label">全部單元</div></div>
         <div class="wm-div"></div>
@@ -1335,33 +1337,37 @@ const PRESET_UNITS={"刑法": ["前言", "解釋", "原則", "四要件", "三�
 let examBulkSubjId=null;
 
 async function renderExam(){
+  if(_renderExamGuard)return;
+  _renderExamGuard=true;
   let subjects,units;
   try{[subjects,units]=await Promise.all([db('GET','exam_subjects','','?order=created_at.asc'),db('GET','exam_units','','?order=created_at.asc')]);}
-  catch(e){document.getElementById('exam-list').innerHTML=`<div class="empty" style="color:var(--red)">載入失敗：${e.message}</div>`;return;}
+  catch(e){document.getElementById('exam-list').innerHTML=`<div class="empty" style="color:var(--red)">載入失敗：${e.message}</div>`;_renderExamGuard=false;return;}
   const uMap={};(units||[]).forEach(u=>{if(!uMap[u.subject_id])uMap[u.subject_id]=[];uMap[u.subject_id].push(u);});
-  let totalU=0,doneU=0;
-  (subjects||[]).forEach(s=>{const su=uMap[s.id]||[];totalU+=su.length;doneU+=su.filter(u=>u.lecture_done>0&&u.practice_done>0).length;});
-  document.getElementById('wm-done').textContent=doneU;
+  let totalU=0,lecDoneU=0,quizDoneU=0;
+  (subjects||[]).forEach(s=>{const su=uMap[s.id]||[];totalU+=su.length;lecDoneU+=su.filter(u=>u.lecture_done>0).length;quizDoneU+=su.filter(u=>u.practice_done>0).length;});
+  const totalActions=lecDoneU+quizDoneU;
+  document.getElementById('wm-lec').textContent=lecDoneU;
+  document.getElementById('wm-quiz').textContent=quizDoneU;
   document.getElementById('wm-total').textContent=totalU;
-  const pct=totalU>0?Math.round(doneU/totalU*100):0;
+  const pct=totalU>0?Math.round(totalActions/(totalU*2)*100):0;
   document.getElementById('wm-pct').textContent=pct+'%';
   document.getElementById('wm-bar').style.width=pct+'%';
-  const earned=Math.floor(doneU/5);
+  const earned=Math.floor(totalActions/5);
   document.getElementById('wm-badges').textContent=earned;
-  renderExamBadges(earned,Math.max(EXAM_BADGES.length,Math.ceil(totalU/5)));
-  if(_lastEarned>=0 && earned>_lastEarned){
+  renderExamBadges(earned,Math.max(EXAM_BADGES.length,Math.ceil(totalU*2/5)));
+  if(_lastEarned>=0&&earned>_lastEarned){
     const newBadge=EXAM_BADGES[earned-1];
-    if(newBadge) showBadgeUnlock(newBadge, earned*5);
+    if(newBadge)showBadgeUnlock(newBadge,earned*5);
   }
-  if(_lastEarned<0) _lastEarned=earned;
-  else _lastEarned=earned;
+  _lastEarned=earned;
   const el=document.getElementById('exam-list');
   const SIX=['刑法','民法','商法','民訴','刑訴','行政'];
   const existNames=(subjects||[]).map(s=>s.name);
   const missing=SIX.filter(n=>!existNames.includes(n));
-  if(missing.length>0){ await examPreloadMissing(missing); return; }
-  if(!subjects||!subjects.length){el.innerHTML='<div class="empty">尚無科目，點上方「＋ 新增科目」</div>';return;}
+  if(missing.length>0){ await examPreloadMissing(missing); _renderExamGuard=false; return; }
+  if(!subjects||!subjects.length){el.innerHTML='<div class="empty">尚無科目，點上方「＋ 新增科目」</div>';_renderExamGuard=false;return;}
   el.innerHTML=subjects.map(s=>renderExamSubject(s,uMap[s.id]||[])).join('');
+  _renderExamGuard=false;
 }
 
 function renderExamBadges(earned,total){
@@ -1377,15 +1383,16 @@ function renderExamSubject(s,units){
   const color=s.color||lore.color;
   const total=units.length;
   const lecDone=units.filter(u=>u.lecture_done>0).length;
+  const quizDone=units.filter(u=>u.practice_done>0).length;
   const fullyDone=units.filter(u=>u.lecture_done>0&&u.practice_done>0).length;
-  const pct=total>0?Math.round(fullyDone/total*100):0;
+  const pct=total>0?Math.round((lecDone+quizDone)/(total*2)*100):0;
   const milestones=[];
   for(let m=5;m<=total;m+=5)if(fullyDone>=m)milestones.push(m);
   return`<div class="exam-subj-section">
     <div class="exam-subj-head" onclick="toggleExamSubject('${s.id}')" style="background:linear-gradient(135deg,${color} 0%,${color}cc 100%)">
       <div class="esj-left">
         <div class="esj-icon">${lore.icon}</div>
-        <div><div class="esj-name">${s.name}</div><div class="esj-sub">${lore.kingdom}·${lore.title}·聽課${lecDone}/${total} 全破${fullyDone}/${total}</div></div>
+        <div><div class="esj-name">${s.name}</div><div class="esj-sub">${lore.kingdom}·${lore.title}·聽課${lecDone}/${total} 刷題${quizDone}/${total}</div></div>
       </div>
       <div class="esj-right">
         <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end">
@@ -1410,8 +1417,8 @@ function renderExamSubject(s,units){
 
 function renderExamUnit(u,idx){
   const lecDone=u.lecture_done>0;
-  const fullyDone=lecDone&&u.practice_done>0;
-  const qLocked=!lecDone;
+  const quizDone=u.practice_done>0;
+  const fullyDone=lecDone&&quizDone;
   return`<div class="eunit-card ${fullyDone?'fully-done':lecDone?'lec-done':''}" id="euc-${u.id}">
     ${fullyDone?'<div class="eu-seal">✓</div>':''}
     <div class="eu-num">#${idx}</div>
@@ -1423,8 +1430,8 @@ function renderExamUnit(u,idx){
     </div>
     <div class="eu-quiz">
       <span class="eu-quiz-label">刷題</span>
-      <div class="eu-quiz-check ${u.practice_done>0?'done':''} ${qLocked?'locked':''}" onclick="${qLocked?'toast(&quot;先聽完課才能刷題！&quot;)':('examToggleQuiz(&quot;'+u.id+'&quot;,'+u.practice_done+')')}">${u.practice_done>0?'✓':''}</div>
-      <span class="eu-quiz-txt ${u.practice_done>0?'done':qLocked?'locked':''}">${u.practice_done>0?'已刷題':qLocked?'🔒先聽課':'未刷題'}</span>
+      <div class="eu-quiz-check ${quizDone?'done':''}" onclick="examToggleQuiz('${u.id}',${u.practice_done})">${quizDone?'✓':''}</div>
+      <span class="eu-quiz-txt ${quizDone?'done':''}">${quizDone?'已刷題':'未刷題'}</span>
     </div>
   </div>`;
 }
@@ -1500,6 +1507,7 @@ async function examPreloadMissing(missing){
 
 
 let _lastEarned = -1;
+let _renderExamGuard = false;
 
 function showBadgeUnlock(badge, count){
   const ov = document.getElementById('badge-unlock-overlay');
