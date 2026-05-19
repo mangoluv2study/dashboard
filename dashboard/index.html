@@ -11,15 +11,15 @@
 :root{--ink:#18181a;--ink2:#44444a;--ink3:#888892;--bg:#f8f7f3;--bg2:#f0ede5;--bg3:#e6e2d8;--line:rgba(24,24,26,0.10);--line2:rgba(24,24,26,0.18);--green:#1a6644;--green-bg:#e8f5ee;--red:#8b1e1e;--red-bg:#fbeaea;--amber:#7a4a0a;--amber-bg:#fdf3e3;--blue:#1a4580;--blue-bg:#e8eef8;--r:6px;}
 *{box-sizing:border-box;margin:0;padding:0}
 body{
-  background-color:#f5f0e8;
+  background-color:#f2ece1;
   color:var(--ink);
   font-family:'Noto Serif TC',serif;
   min-height:100vh;
   background-image:
-    radial-gradient(ellipse 80% 50% at 10% 0%,rgba(200,150,10,.07) 0%,transparent 60%),
-    radial-gradient(ellipse 60% 40% at 90% 100%,rgba(26,40,90,.06) 0%,transparent 60%),
-    radial-gradient(ellipse 40% 60% at 50% 50%,rgba(26,66,68,.04) 0%,transparent 70%),
-    url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c8960a' fill-opacity='0.028'%3E%3Cpath d='M50 50v-10h-2v10h-10v2h10v10h2v-10h10v-2h-10zM50 20V10h-2v10h-10v2h10v10h2V22h10v-2h-10zM20 50V40h-2v10H8v2h10v10h2V52h10v-2H20zM20 20V10h-2v10H8v2h10v10h2V22h10v-2H20z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    radial-gradient(ellipse 80% 50% at 10% 0%,rgba(178,138,86,.08) 0%,transparent 60%),
+    radial-gradient(ellipse 60% 40% at 90% 100%,rgba(98,80,62,.05) 0%,transparent 60%),
+    radial-gradient(ellipse 40% 60% at 50% 50%,rgba(102,90,70,.05) 0%,transparent 70%),
+    url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239d7f47' fill-opacity='0.028'%3E%3Cpath d='M50 50v-10h-2v10h-10v2h10v10h2v-10h10v-2h-10zM50 20V10h-2v10h-10v2h10v10h2V22h10v-2h-10zM20 50V40h-2v10H8v2h10v10h2V52h10v-2H20zM20 20V10h-2v10H8v2h10v10h2V22h10v-2H20z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
 }
 body::before{
   content:'';
@@ -32,12 +32,12 @@ body::before{
 body>*{position:relative;z-index:1;}
 button{cursor:pointer;font-family:'Noto Serif TC',serif}
 input,select,textarea{font-family:'Noto Serif TC',serif}
-.topnav{background:linear-gradient(180deg,#1a1208 0%,#23180a 100%);display:flex;align-items:stretch;height:52px;position:sticky;top:0;z-index:50;box-shadow:0 2px 16px rgba(26,18,8,.35),0 1px 0 rgba(200,150,10,.2);border-bottom:1px solid rgba(200,150,10,.15)}
-.nav-brand{color:#f0c030;font-size:14px;font-weight:900;padding:0 14px;display:flex;align-items:center;border-right:1px solid rgba(200,150,10,.2);white-space:nowrap;letter-spacing:.08em;text-shadow:0 0 12px rgba(240,192,48,.3)}
+.topnav{background:linear-gradient(180deg,#3f2f1d 0%,#2d2217 100%);display:flex;align-items:stretch;height:52px;position:sticky;top:0;z-index:50;box-shadow:0 2px 16px rgba(72,56,40,.35),0 1px 0 rgba(217,178,125,.18);border-bottom:1px solid rgba(217,178,125,.18)}
+.nav-brand{color:#e5c97a;font-size:14px;font-weight:900;padding:0 14px;display:flex;align-items:center;border-right:1px solid rgba(217,178,125,.18);white-space:nowrap;letter-spacing:.08em;text-shadow:0 0 6px rgba(229,201,122,.18)}
 .page-tabs{display:flex;flex:1;overflow-x:auto}
-.ptab{padding:0 14px;font-size:13px;color:rgba(255,255,255,.45);background:none;border:none;border-bottom:2px solid transparent;white-space:nowrap;transition:all .15s;height:100%}
-.ptab.on{color:#f8f7f3;border-bottom:2px solid #f8f7f3}
-.ptab:hover:not(.on){color:rgba(255,255,255,.75)}
+.ptab{padding:0 14px;font-size:13px;color:rgba(237,220,185,.75);background:none;border:none;border-bottom:2px solid transparent;white-space:nowrap;transition:all .15s;height:100%}
+.ptab.on{color:#f7edd7;border-bottom:2px solid rgba(229,201,122,.9)}
+.ptab:hover:not(.on){color:rgba(249,241,228,.95)}
 .nav-right{display:flex;align-items:center;padding:0 12px}
 .nav-dt{font-family:'DM Mono',monospace;font-size:11px;color:rgba(255,255,255,.35)}
 .page{display:none}.page.on{display:block}
@@ -57,6 +57,19 @@ input,select,textarea{font-family:'Noto Serif TC',serif}
 .sc-label{font-size:11px;color:var(--ink3);margin-bottom:4px}
 .sc-val{font-family:'DM Mono',monospace;font-size:19px;font-weight:500}
 .sc-val.g{color:var(--green)}.sc-val.r{color:var(--red)}.sc-val.pos{color:var(--green)}.sc-val.neg{color:var(--red)}
+.dash-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;margin-bottom:20px}
+.dash-card{background:rgba(249,243,233,.95);border:1px solid rgba(127,103,67,.18);border-radius:24px;padding:24px;box-shadow:0 26px 56px rgba(72,56,40,.16);color:#3f3525;position:relative;overflow:hidden;min-height:220px;display:flex;flex-direction:column;align-items:center;gap:14px}
+.dash-card::before{content:'';position:absolute;inset:-24px;background:radial-gradient(circle at top right,rgba(210,178,130,.24),transparent 42%);pointer-events:none}
+.dash-state{font-size:12px;color:#6f5a40;text-align:center;line-height:1.6;position:relative;z-index:1;max-width:170px}
+.dash-summary{background:rgba(249,243,233,.95);border:1px solid rgba(127,103,67,.18);border-radius:22px;padding:22px;box-shadow:0 26px 56px rgba(72,56,40,.16);color:#3f3525}
+.dash-ring-wrap{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.dash-ring{width:120px;height:120px;border-radius:50%;background:#f4eadc;display:grid;place-items:center;position:relative;box-shadow:0 12px 22px rgba(72,56,40,.14),inset 0 0 0 2px rgba(129,95,55,.16);overflow:hidden}
+.dash-ring::before{content:'';position:absolute;inset:8px;border-radius:50%;background:conic-gradient(#9c7c4b 0deg calc(var(--ring-pct,0) * 3.6deg), rgba(255,255,255,.12) calc(var(--ring-pct,0) * 3.6deg) 360deg);transform:rotate(-90deg);}
+.dash-ring::after{content:'';width:78px;height:78px;border-radius:50%;background:#f2e7d7;position:absolute;z-index:0;box-shadow:inset 0 3px 12px rgba(111,86,44,.12)}
+.dash-ring span{position:relative;z-index:1;font-family:'DM Mono',monospace;font-size:18px;font-weight:700;color:#4d3f2b}
+.dash-label{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:#6f5a40;margin-top:6px;position:relative;z-index:1}
+.dash-note{font-size:13px;color:#5f513d;line-height:1.7;margin-top:10px}
+@media(max-width:680px){.dash-ring-wrap{flex-direction:column;align-items:flex-start}}
 .dnav{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:18px}
 .darr{background:none;border:1px solid var(--line2);color:var(--ink2);width:28px;height:28px;border-radius:var(--r);font-size:14px;display:flex;align-items:center;justify-content:center}
 .darr:hover{background:var(--bg2)}
@@ -381,7 +394,8 @@ input,select,textarea{font-family:'Noto Serif TC',serif}
 <div class="topnav">
   <div class="nav-brand">日記</div>
   <div class="page-tabs">
-    <button class="ptab on" onclick="goPage('budget')">💰 記帳</button>
+    <button class="ptab on" onclick="goPage('dashboard')">📊 儀表板</button>
+    <button class="ptab" onclick="goPage('budget')">💰 記帳</button>
     <button class="ptab" onclick="goPage('supps')">💊 保健品</button>
     <button class="ptab" onclick="goPage('nutri')">🥗 飲食</button>
     <button class="ptab" onclick="goPage('habit')">🌱 習慣</button>
@@ -390,8 +404,60 @@ input,select,textarea{font-family:'Noto Serif TC',serif}
   <div class="nav-right"><div class="nav-dt" id="nav-dt"></div></div>
 </div>
 
+<!-- PAGE 0: DASHBOARD -->
+<div class="page on" id="page-dashboard">
+  <div class="wrap">
+    <div class="sec">
+      <div class="sec-head">
+        <div>
+          <div class="sec-title">今日儀表板</div>
+          <div style="font-size:13px;color:var(--ink3);margin-top:4px">快速檢視今天五項追蹤紀錄完成度</div>
+        </div>
+        <button class="ghost" onclick="renderDashboard()">重新整理</button>
+      </div>
+      <div class="dash-grid" id="dashboard-cards">
+        <div class="dash-card">
+          <div class="dash-ring" id="db-budget-ring"><span id="db-budget-pct">0%</span></div>
+          <div class="dash-label">三餐記帳</div>
+          <div class="dash-state" id="db-budget-state">檢查今天是否已登錄餐飲支出</div>
+        </div>
+        <div class="dash-card">
+          <div class="dash-ring" id="db-supps-ring"><span id="db-supps-pct">0%</span></div>
+          <div class="dash-label">保健品紀錄</div>
+          <div class="dash-state" id="db-supps-state">今天是否已記錄保健品服用</div>
+        </div>
+        <div class="dash-card">
+          <div class="dash-ring" id="db-nutri-ring"><span id="db-nutri-pct">0%</span></div>
+          <div class="dash-label">飲食紀錄</div>
+          <div class="dash-state" id="db-nutri-state">檢查今天是否已填寫飲食內容</div>
+        </div>
+        <div class="dash-card">
+          <div class="dash-ring" id="db-habit-ring"><span id="db-habit-pct">0%</span></div>
+          <div class="dash-label">習慣追蹤</div>
+          <div class="dash-state" id="db-habit-state">今天是否有完成習慣打卡</div>
+        </div>
+        <div class="dash-card">
+          <div class="dash-ring" id="db-exam-ring"><span id="db-exam-pct">0%</span></div>
+          <div class="dash-label">考試準備</div>
+          <div class="dash-state" id="db-exam-state">今天是否有更新考試進度</div>
+        </div>
+      </div>
+      <div class="dash-summary">
+        <div class="dash-ring-wrap">
+          <div class="dash-ring" id="db-ring"><span id="db-ring-pct">0%</span></div>
+          <div>
+            <div class="dash-label">整體完成率</div>
+            <div class="dash-value" id="db-overall">0 / 5</div>
+            <div class="dash-note" id="db-note">持續完成每天記錄，你的生活會更有節奏。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- PAGE 1: BUDGET -->
-<div class="page on" id="page-budget">
+<div class="page" id="page-budget">
   <div class="wrap">
     <div class="dnav">
       <button class="darr" onclick="chgMonth(-1)">‹</button>
@@ -580,9 +646,7 @@ input,select,textarea{font-family:'Noto Serif TC',serif}
     <div class="war-map">
       <div class="wm-title">⚔ 天下一統進度</div>
       <div class="wm-stats">
-        <div><div class="wm-num" id="wm-lec">0</div><div class="wm-label">已聽課</div></div>
-        <div class="wm-div"></div>
-        <div><div class="wm-num" id="wm-quiz">0</div><div class="wm-label">已刷題</div></div>
+        <div><div class="wm-num" id="wm-done">0</div><div class="wm-label">已攻下</div></div>
         <div class="wm-div"></div>
         <div><div class="wm-num" id="wm-total">0</div><div class="wm-label">全部單元</div></div>
         <div class="wm-div"></div>
@@ -864,9 +928,61 @@ function initState(){
 
 function goPage(p){
   document.querySelectorAll('.page').forEach(el=>el.classList.remove('on'));
-  document.querySelectorAll('.ptab').forEach((el,i)=>el.classList.toggle('on',['budget','supps','nutri','habit','exam'][i]===p));
+  document.querySelectorAll('.ptab').forEach((el,i)=>el.classList.toggle('on',['dashboard','budget','supps','nutri','habit','exam'][i]===p));
   document.getElementById('page-'+p).classList.add('on');
-  if(p==='budget')renderBudget();if(p==='supps')renderSupps();if(p==='nutri')renderNutri();if(p==='habit')renderHabit();if(p==='exam')renderExam();
+  if(p==='dashboard')renderDashboard();if(p==='budget')renderBudget();if(p==='supps')renderSupps();if(p==='nutri')renderNutri();if(p==='habit')renderHabit();if(p==='exam')renderExam();
+}
+
+async function renderDashboard(){
+  const today=fmtD(new Date());
+  const todayStart=`${today}T00:00:00`;
+  const cards=[
+    {ringId:'db-budget-ring',pctId:'db-budget-pct',stateId:'db-budget-state',done:false,ok:'今日已記帳',warn:'今天尚未記帳'},
+    {ringId:'db-supps-ring',pctId:'db-supps-pct',stateId:'db-supps-state',done:false,ok:'保健品已記錄',warn:'今天尚未記錄保健品'},
+    {ringId:'db-nutri-ring',pctId:'db-nutri-pct',stateId:'db-nutri-state',done:false,ok:'飲食已紀錄',warn:'今天尚未記錄飲食'},
+    {ringId:'db-habit-ring',pctId:'db-habit-pct',stateId:'db-habit-state',done:false,ok:'今日有習慣打卡',warn:'今天尚未完成習慣'},
+    {ringId:'db-exam-ring',pctId:'db-exam-pct',stateId:'db-exam-state',done:false,ok:'今天已更新考試進度',warn:'今天尚未更新考試'}
+  ];
+  try{
+    const [records,supps,nutri,cheats,habits]=await Promise.all([
+      db('GET','records','',`?date=eq.${today}`),
+      db('GET','supplement_logs','',`?date=eq.${today}`),
+      db('GET','nutrition_logs','',`?date=eq.${today}`),
+      db('GET','cheat_foods','',`?date=eq.${today}`),
+      db('GET','habit_logs','',`?date=eq.${today}`)
+    ]);
+    cards[0].done = Array.isArray(records)&&records.length>0;
+    cards[1].done = Array.isArray(supps)&&supps.length>0 && supps.some(s=>s.taken|| (s.taken_timings && s.taken_timings.length>0));
+    cards[2].done = Array.isArray(nutri)&&nutri.length>0 || Array.isArray(cheats)&&cheats.length>0;
+    cards[3].done = Array.isArray(habits)&&habits.length>0;
+    try{
+      const examToday=await db('GET','exam_units','',`?or=(updated_at.gte.${todayStart},created_at.gte.${todayStart})&limit=1`);
+      cards[4].done = Array.isArray(examToday)&&examToday.length>0;
+    }catch(_){
+      cards[4].done = false;
+    }
+  }catch(e){
+    document.getElementById('dashboard-cards').innerHTML='<div class="empty" style="color:var(--red);grid-column:span 3">儀表板載入失敗：'+e.message+'</div>';
+    document.getElementById('db-overall').textContent='- / 5';
+    document.getElementById('db-ring').style.setProperty('--ring-pct',0);
+    document.getElementById('db-ring-pct').textContent='-';
+    document.getElementById('db-note').textContent='請稍後重新整理或檢查網路。';
+    return;
+  }
+  const doneCount=cards.filter(c=>c.done).length;
+  cards.forEach(c=>{
+    const pctEl=document.getElementById(c.pctId);
+    const ringEl=document.getElementById(c.ringId);
+    const stateEl=document.getElementById(c.stateId);
+    if(pctEl) pctEl.textContent = c.done ? '100%' : '0%';
+    if(ringEl) ringEl.style.setProperty('--ring-pct', c.done ? 100 : 0);
+    if(stateEl) stateEl.textContent = c.done ? c.ok : c.warn;
+  });
+  const pct=Math.round(doneCount/cards.length*100);
+  document.getElementById('db-overall').textContent=`${doneCount} / ${cards.length}`;
+  document.getElementById('db-ring-pct').textContent=`${pct}%`;
+  document.getElementById('db-ring').style.setProperty('--ring-pct', pct);
+  document.getElementById('db-note').textContent = doneCount===cards.length ? '太棒了！今天已完成所有追蹤項目。' : doneCount>=3 ? '已完成大部分項目，再補一兩項就更完整。' : doneCount>=1 ? '先從一項開始，別急慢慢建立習慣。' : '今天還可以再補一項記錄，讓今天更有節奏。';
 }
 
 function buildCatOptions(selId,type){
@@ -1337,37 +1453,33 @@ const PRESET_UNITS={"刑法": ["前言", "解釋", "原則", "四要件", "三�
 let examBulkSubjId=null;
 
 async function renderExam(){
-  if(_renderExamGuard)return;
-  _renderExamGuard=true;
   let subjects,units;
   try{[subjects,units]=await Promise.all([db('GET','exam_subjects','','?order=created_at.asc'),db('GET','exam_units','','?order=created_at.asc')]);}
-  catch(e){document.getElementById('exam-list').innerHTML=`<div class="empty" style="color:var(--red)">載入失敗：${e.message}</div>`;_renderExamGuard=false;return;}
+  catch(e){document.getElementById('exam-list').innerHTML=`<div class="empty" style="color:var(--red)">載入失敗：${e.message}</div>`;return;}
   const uMap={};(units||[]).forEach(u=>{if(!uMap[u.subject_id])uMap[u.subject_id]=[];uMap[u.subject_id].push(u);});
-  let totalU=0,lecDoneU=0,quizDoneU=0;
-  (subjects||[]).forEach(s=>{const su=uMap[s.id]||[];totalU+=su.length;lecDoneU+=su.filter(u=>u.lecture_done>0).length;quizDoneU+=su.filter(u=>u.practice_done>0).length;});
-  const totalActions=lecDoneU+quizDoneU;
-  document.getElementById('wm-lec').textContent=lecDoneU;
-  document.getElementById('wm-quiz').textContent=quizDoneU;
+  let totalU=0,doneU=0;
+  (subjects||[]).forEach(s=>{const su=uMap[s.id]||[];totalU+=su.length;doneU+=su.filter(u=>u.lecture_done>0&&u.practice_done>0).length;});
+  document.getElementById('wm-done').textContent=doneU;
   document.getElementById('wm-total').textContent=totalU;
-  const pct=totalU>0?Math.round(totalActions/(totalU*2)*100):0;
+  const pct=totalU>0?Math.round(doneU/totalU*100):0;
   document.getElementById('wm-pct').textContent=pct+'%';
   document.getElementById('wm-bar').style.width=pct+'%';
-  const earned=Math.floor(totalActions/5);
+  const earned=Math.floor(doneU/5);
   document.getElementById('wm-badges').textContent=earned;
-  renderExamBadges(earned,Math.max(EXAM_BADGES.length,Math.ceil(totalU*2/5)));
-  if(_lastEarned>=0&&earned>_lastEarned){
+  renderExamBadges(earned,Math.max(EXAM_BADGES.length,Math.ceil(totalU/5)));
+  if(_lastEarned>=0 && earned>_lastEarned){
     const newBadge=EXAM_BADGES[earned-1];
-    if(newBadge)showBadgeUnlock(newBadge,earned*5);
+    if(newBadge) showBadgeUnlock(newBadge, earned*5);
   }
-  _lastEarned=earned;
+  if(_lastEarned<0) _lastEarned=earned;
+  else _lastEarned=earned;
   const el=document.getElementById('exam-list');
   const SIX=['刑法','民法','商法','民訴','刑訴','行政'];
   const existNames=(subjects||[]).map(s=>s.name);
   const missing=SIX.filter(n=>!existNames.includes(n));
-  if(missing.length>0){ await examPreloadMissing(missing); _renderExamGuard=false; return; }
-  if(!subjects||!subjects.length){el.innerHTML='<div class="empty">尚無科目，點上方「＋ 新增科目」</div>';_renderExamGuard=false;return;}
+  if(missing.length>0){ await examPreloadMissing(missing); return; }
+  if(!subjects||!subjects.length){el.innerHTML='<div class="empty">尚無科目，點上方「＋ 新增科目」</div>';return;}
   el.innerHTML=subjects.map(s=>renderExamSubject(s,uMap[s.id]||[])).join('');
-  _renderExamGuard=false;
 }
 
 function renderExamBadges(earned,total){
@@ -1383,16 +1495,15 @@ function renderExamSubject(s,units){
   const color=s.color||lore.color;
   const total=units.length;
   const lecDone=units.filter(u=>u.lecture_done>0).length;
-  const quizDone=units.filter(u=>u.practice_done>0).length;
   const fullyDone=units.filter(u=>u.lecture_done>0&&u.practice_done>0).length;
-  const pct=total>0?Math.round((lecDone+quizDone)/(total*2)*100):0;
+  const pct=total>0?Math.round(fullyDone/total*100):0;
   const milestones=[];
   for(let m=5;m<=total;m+=5)if(fullyDone>=m)milestones.push(m);
   return`<div class="exam-subj-section">
     <div class="exam-subj-head" onclick="toggleExamSubject('${s.id}')" style="background:linear-gradient(135deg,${color} 0%,${color}cc 100%)">
       <div class="esj-left">
         <div class="esj-icon">${lore.icon}</div>
-        <div><div class="esj-name">${s.name}</div><div class="esj-sub">${lore.kingdom}·${lore.title}·聽課${lecDone}/${total} 刷題${quizDone}/${total}</div></div>
+        <div><div class="esj-name">${s.name}</div><div class="esj-sub">${lore.kingdom}·${lore.title}·聽課${lecDone}/${total} 全破${fullyDone}/${total}</div></div>
       </div>
       <div class="esj-right">
         <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end">
@@ -1417,8 +1528,8 @@ function renderExamSubject(s,units){
 
 function renderExamUnit(u,idx){
   const lecDone=u.lecture_done>0;
-  const quizDone=u.practice_done>0;
-  const fullyDone=lecDone&&quizDone;
+  const fullyDone=lecDone&&u.practice_done>0;
+  const qLocked=!lecDone;
   return`<div class="eunit-card ${fullyDone?'fully-done':lecDone?'lec-done':''}" id="euc-${u.id}">
     ${fullyDone?'<div class="eu-seal">✓</div>':''}
     <div class="eu-num">#${idx}</div>
@@ -1430,8 +1541,8 @@ function renderExamUnit(u,idx){
     </div>
     <div class="eu-quiz">
       <span class="eu-quiz-label">刷題</span>
-      <div class="eu-quiz-check ${quizDone?'done':''}" onclick="examToggleQuiz('${u.id}',${u.practice_done})">${quizDone?'✓':''}</div>
-      <span class="eu-quiz-txt ${quizDone?'done':''}">${quizDone?'已刷題':'未刷題'}</span>
+      <div class="eu-quiz-check ${u.practice_done>0?'done':''} ${qLocked?'locked':''}" onclick="${qLocked?'toast(&quot;先聽完課才能刷題！&quot;)':('examToggleQuiz(&quot;'+u.id+'&quot;,'+u.practice_done+')')}">${u.practice_done>0?'✓':''}</div>
+      <span class="eu-quiz-txt ${u.practice_done>0?'done':qLocked?'locked':''}">${u.practice_done>0?'已刷題':qLocked?'🔒先聽課':'未刷題'}</span>
     </div>
   </div>`;
 }
@@ -1507,7 +1618,6 @@ async function examPreloadMissing(missing){
 
 
 let _lastEarned = -1;
-let _renderExamGuard = false;
 
 function showBadgeUnlock(badge, count){
   const ov = document.getElementById('badge-unlock-overlay');
@@ -1547,7 +1657,7 @@ async function boot(){
   initState();
   const setup=localStorage.getItem('nutri-setup');
   if(!setup){try{const g=await db('GET','nutrition_goals','','?limit=1');if(g&&g.length>0)localStorage.setItem('nutri-setup','1');else document.getElementById('wizard').style.display='block';}catch(e){document.getElementById('wizard').style.display='block';}}
-  renderBudget();
+  renderDashboard();
 }
 boot();
 </script>
