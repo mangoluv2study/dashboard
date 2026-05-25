@@ -432,9 +432,9 @@ input,select,textarea{font-family:'Noto Serif TC',serif}
           <div class="dash-state" id="db-nutri-state">檢查今天是否已填寫飲食內容</div>
         </div>
         <div class="dash-card">
-          <div class="dash-ring" id="db-habit-ring"><span id="db-habit-pct">0%</span></div>
-          <div class="dash-label">習慣追蹤</div>
-          <div class="dash-state" id="db-habit-state">今天是否有完成習慣打卡</div>
+          <div class="dash-ring" id="db-habit-ring"><span id="db-habit-pct" style="font-size:14px">沒有</span></div>
+          <div class="dash-label">感恩紀錄</div>
+          <div class="dash-state" id="db-habit-state">今天是否有寫感恩紀錄</div>
         </div>
         <div class="dash-card">
           <div class="dash-ring" id="db-exam-ring"><span id="db-exam-pct">0%</span></div>
@@ -937,29 +937,67 @@ async function renderDashboard(){
   const today=fmtD(new Date());
   const todayStart=`${today}T00:00:00`;
   const cards=[
-    {ringId:'db-budget-ring',pctId:'db-budget-pct',stateId:'db-budget-state',done:false,ok:'今日已記帳',warn:'今天尚未記帳'},
-    {ringId:'db-supps-ring',pctId:'db-supps-pct',stateId:'db-supps-state',done:false,ok:'保健品已記錄',warn:'今天尚未記錄保健品'},
-    {ringId:'db-nutri-ring',pctId:'db-nutri-pct',stateId:'db-nutri-state',done:false,ok:'飲食已紀錄',warn:'今天尚未記錄飲食'},
-    {ringId:'db-habit-ring',pctId:'db-habit-pct',stateId:'db-habit-state',done:false,ok:'今日有習慣打卡',warn:'今天尚未完成習慣'},
-    {ringId:'db-exam-ring',pctId:'db-exam-pct',stateId:'db-exam-state',done:false,ok:'今天已更新考試進度',warn:'今天尚未更新考試'}
+    {ringId:'db-budget-ring',pctId:'db-budget-pct',stateId:'db-budget-state',done:false,pct:0,ok:'今日已記帳',warn:'今天尚未記帳'},
+    {ringId:'db-supps-ring',pctId:'db-supps-pct',stateId:'db-supps-state',done:false,pct:0,ok:'保健品全部完成',warn:'今天保健品尚未完成'},
+    {ringId:'db-nutri-ring',pctId:'db-nutri-pct',stateId:'db-nutri-state',done:false,pct:0,ok:'飲食目標達成中',warn:'今天尚未記錄飲食'},
+    {ringId:'db-habit-ring',pctId:'db-habit-pct',stateId:'db-habit-state',done:false,isGrat:true,ok:'今日已寫感恩紀錄',warn:'今天尚未寫感恩紀錄'},
+    {ringId:'db-exam-ring',pctId:'db-exam-pct',stateId:'db-exam-state',done:false,pct:0,ok:'今天已更新考試進度',warn:'今天尚未更新考試'}
   ];
   try{
-    const [records,supps,nutri,cheats,habits]=await Promise.all([
+    const [records,suppItems,suppLogs,goals,nutri,cheats,grat]=await Promise.all([
       db('GET','records','',`?date=eq.${today}`),
+      db('GET','supplements','','?is_active=eq.true'),
       db('GET','supplement_logs','',`?date=eq.${today}`),
+      db('GET','nutrition_goals','','?order=id.asc'),
       db('GET','nutrition_logs','',`?date=eq.${today}`),
       db('GET','cheat_foods','',`?date=eq.${today}`),
-      db('GET','habit_logs','',`?date=eq.${today}`)
+      db('GET','gratitude','',`?date=eq.${today}`)
     ]);
-    cards[0].done = Array.isArray(records)&&records.length>0;
-    cards[1].done = Array.isArray(supps)&&supps.length>0 && supps.some(s=>s.taken|| (s.taken_timings && s.taken_timings.length>0));
-    cards[2].done = Array.isArray(nutri)&&nutri.length>0 || Array.isArray(cheats)&&cheats.length>0;
-    cards[3].done = Array.isArray(habits)&&habits.length>0;
+    // Budget: binary
+    cards[0].done=Array.isArray(records)&&records.length>0;
+    cards[0].pct=cards[0].done?100:0;
+    // Supplements: actual doneSlots/totalSlots %
+    {
+      const logMap={};(suppLogs||[]).forEach(l=>logMap[l.supplement_id]=l);
+      let totalSlots=0,doneSlots=0;
+      (suppItems||[]).forEach(s=>{
+        const timings=s.timings?(s.timings.split(',').filter(Boolean)):[];
+        const log=logMap[s.id];
+        const takenT=log?.taken_timings?(log.taken_timings.split(',').filter(Boolean)):[];
+        if(timings.length){totalSlots+=timings.length;doneSlots+=timings.filter(t=>takenT.includes(t)).length;}
+        else{totalSlots+=1;doneSlots+=log?.taken?1:0;}
+      });
+      const p=totalSlots>0?Math.round(doneSlots/totalSlots*100):0;
+      cards[1].pct=p;cards[1].done=p>0;
+    }
+    // Nutrition: average % of each goal achieved (capped at 100 per nutrient)
+    {
+      const gMap={};(goals||[]).forEach(g=>gMap[g.nutrient]=g);
+      const lMap={};(nutri||[]).forEach(l=>lMap[l.nutrient]=l);
+      const goalKeys=Object.keys(gMap);
+      if(goalKeys.length){
+        let totalPct=0;
+        goalKeys.forEach(key=>{
+          const actual=lMap[key]?lMap[key].actual:0;
+          const goalAmt=gMap[key].goal_amount;
+          totalPct+=goalAmt>0?Math.min(100,Math.round(actual/goalAmt*100)):0;
+        });
+        const p=Math.round(totalPct/goalKeys.length);
+        cards[2].pct=p;cards[2].done=p>0;
+      } else {
+        const hasAny=Array.isArray(nutri)&&nutri.length>0||Array.isArray(cheats)&&cheats.length>0;
+        cards[2].pct=hasAny?100:0;cards[2].done=hasAny;
+      }
+    }
+    // Habit: gratitude journal yes/no (no percentage)
+    const gratDone=Array.isArray(grat)&&grat.length>0&&grat[0].content&&grat[0].content.trim().length>0;
+    cards[3].done=gratDone;
     try{
       const examToday=await db('GET','exam_units','',`?or=(updated_at.gte.${todayStart},created_at.gte.${todayStart})&limit=1`);
-      cards[4].done = Array.isArray(examToday)&&examToday.length>0;
+      cards[4].done=Array.isArray(examToday)&&examToday.length>0;
+      cards[4].pct=cards[4].done?100:0;
     }catch(_){
-      cards[4].done = false;
+      cards[4].done=false;cards[4].pct=0;
     }
   }catch(e){
     document.getElementById('dashboard-cards').innerHTML='<div class="empty" style="color:var(--red);grid-column:span 3">儀表板載入失敗：'+e.message+'</div>';
@@ -974,9 +1012,14 @@ async function renderDashboard(){
     const pctEl=document.getElementById(c.pctId);
     const ringEl=document.getElementById(c.ringId);
     const stateEl=document.getElementById(c.stateId);
-    if(pctEl) pctEl.textContent = c.done ? '100%' : '0%';
-    if(ringEl) ringEl.style.setProperty('--ring-pct', c.done ? 100 : 0);
-    if(stateEl) stateEl.textContent = c.done ? c.ok : c.warn;
+    if(c.isGrat){
+      if(pctEl) pctEl.textContent=c.done?'有':'沒有';
+      if(ringEl) ringEl.style.setProperty('--ring-pct',c.done?100:0);
+    } else {
+      if(pctEl) pctEl.textContent=c.pct+'%';
+      if(ringEl) ringEl.style.setProperty('--ring-pct',c.pct);
+    }
+    if(stateEl) stateEl.textContent=c.done?c.ok:c.warn;
   });
   const pct=Math.round(doneCount/cards.length*100);
   document.getElementById('db-overall').textContent=`${doneCount} / ${cards.length}`;
