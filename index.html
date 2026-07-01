@@ -386,6 +386,7 @@ input,select,textarea{font-family:'Noto Serif TC',serif}
       <div class="wf"><label>🫒 油脂 (份)</label><input id="g-fat" type="number" placeholder="2" step="0.5" min="0"></div>
       <div class="wf"><label>🍎 水果 (份)</label><input id="g-fruit" type="number" placeholder="2" step="0.5" min="0"></div>
       <div class="wf"><label>🥛 牛奶 (份)</label><input id="g-milk" type="number" placeholder="1.5" step="0.5" min="0"></div>
+      <div class="wf"><label>☕ 咖啡因 (mg)</label><input id="g-caffeine" type="number" placeholder="400" step="10" min="0"></div>
     </div>
     <button class="wiz-btn" onclick="saveGoals()">開始追蹤 →</button>
     <div class="wiz-note">資料儲存於 Supabase，換裝置也能使用</div>
@@ -908,7 +909,7 @@ const fmtD=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
 let CICONS={餐飲:'🍜',交通:'🚌',購物:'🛍',娛樂:'🎬',醫療:'🏥',住房:'🏠',薪資:'💼',獎金:'🎁',投資:'📈',其他:'📦'};
 const EMOJIS=['🏦','💳','🚗','✈️','📱','💊','🎓','🏋️','🎵','🌿','🐾','🏪','⚡','🔧','💰','🎯','📚','🍽️','💡','🎁','📈','🏥','🛡️','💎','🎪','🌸','☕','🏊','🎬','🏠'];
 const HABIT_EMOJIS=['💪','🏃','📖','💧','🧘','🥗','😴','✍️','🎵','🌿','🚴','🏋️','🧹','📝','🎯','💊','🌅','🤸','❤️','🌟','🙏','🎨','💻','🧠','🫁'];
-const NUTRI=[{key:'water',label:'💧 水',unit:'ml'},{key:'protein',label:'🥩 蛋白質',unit:'份'},{key:'veggie',label:'🥦 蔬菜',unit:'份'},{key:'starch',label:'🍚 澱粉',unit:'份'},{key:'fat',label:'🫒 油脂',unit:'份'},{key:'fruit',label:'🍎 水果',unit:'份'},{key:'milk',label:'🥛 牛奶',unit:'份'}];
+const NUTRI=[{key:'water',label:'💧 水',unit:'ml'},{key:'protein',label:'🥩 蛋白質',unit:'份'},{key:'veggie',label:'🥦 蔬菜',unit:'份'},{key:'starch',label:'🍚 澱粉',unit:'份'},{key:'fat',label:'🫒 油脂',unit:'份'},{key:'fruit',label:'🍎 水果',unit:'份'},{key:'milk',label:'🥛 牛奶',unit:'份'},{key:'caffeine',label:'☕ 咖啡因',unit:'mg'}];
 let bY,bM,sD,nD,hD,rType='expense',fType='expense',cfType='存入',selEmoji='📦',selHabitEmoji='💪',selSubjColor='#1a4580',editUnitId=null,editUnitSubjId=null,habitChart=null;
 
 function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('on');setTimeout(()=>el.classList.remove('on'),2200);}
@@ -1368,7 +1369,7 @@ async function renderNutri(){
   try{[goals,logs,cheats]=await Promise.all([db('GET','nutrition_goals','','?order=id.asc'),db('GET','nutrition_logs','',`?date=eq.${nD}`),db('GET','cheat_foods','',`?date=eq.${nD}&order=created_at.desc`)]);}
   catch(e){return;}
   const gMap={};(goals||[]).forEach(g=>gMap[g.nutrient]=g);const lMap={};(logs||[]).forEach(l=>lMap[l.nutrient]=l);
-  const NUTRI_COMMENTS={water:{low:'水喝不夠喔，再多喝點！',ok:'水分充足 👍',over:'水喝太多了，適量就好'},protein:{low:'蛋白質不足，記得補充！',ok:'蛋白質達標 💪',over:'蛋白質超量了'},veggie:{low:'蔬菜吃太少了，多吃點！',ok:'蔬菜吃得好 🥦',over:'蔬菜超量了'},starch:{low:'澱粉吃少了',ok:'澱粉均衡 🍚',over:'澱粉吃超囉，注意一下'},fat:{low:'油脂不足',ok:'油脂均衡 🫒',over:'油脂超量了'},fruit:{low:'水果吃少了',ok:'水果均衡 🍎',over:'水果吃太多囉'},milk:{low:'牛奶不足',ok:'牛奶均衡 🥛',over:'牛奶超量了'}};
+  const NUTRI_COMMENTS={water:{low:'水喝不夠喔，再多喝點！',ok:'水分充足 👍',over:'水喝太多了，適量就好'},protein:{low:'蛋白質不足，記得補充！',ok:'蛋白質達標 💪',over:'蛋白質超量了'},veggie:{low:'蔬菜吃太少了，多吃點！',ok:'蔬菜吃得好 🥦',over:'蔬菜超量了'},starch:{low:'澱粉吃少了',ok:'澱粉均衡 🍚',over:'澱粉吃超囉，注意一下'},fat:{low:'油脂不足',ok:'油脂均衡 🫒',over:'油脂超量了'},fruit:{low:'水果吃少了',ok:'水果均衡 🍎',over:'水果吃太多囉'},milk:{low:'牛奶不足',ok:'牛奶均衡 🥛',over:'牛奶超量了'},caffeine:{low:'咖啡因攝取偏低',ok:'咖啡因攝取適中 ☕',over:'咖啡因超量了，注意心悸或失眠'}};
   if(!(goals&&goals.length)){document.getElementById('n-pills').innerHTML='<span class="npill none">尚未設定目標</span>';document.getElementById('n-comment').textContent='';}
   else{
     const pills=NUTRI.map(n=>{const g=gMap[n.key];if(!g)return'';const actual=lMap[n.key]?lMap[n.key].actual:0;const pct=Math.round(actual/g.goal_amount*100);const cls=actual===0?'none':pct>=100&&pct<=120?'ok':pct>120?'over':'low';return`<span class="npill ${cls}">${n.label.split(' ')[1]} ${actual>0?pct+'%':'未填'}</span>`;}).join('');
@@ -1409,7 +1410,7 @@ async function updateGoals(){
   catch(e){toast('儲存失敗');}
 }
 async function saveGoals(){
-  const keys={water:'ml',protein:'份',veggie:'份',starch:'份',fat:'份',fruit:'份',milk:'份'};const rows=[];
+  const keys={water:'ml',protein:'份',veggie:'份',starch:'份',fat:'份',fruit:'份',milk:'份',caffeine:'mg'};const rows=[];
   for(const [key,unit] of Object.entries(keys)){const v=parseFloat(document.getElementById('g-'+key).value)||0;if(v>0)rows.push({nutrient:key,goal_amount:v,unit});}
   if(!rows.length){toast('請至少設定一項目標');return;}
   try{await db('POST','nutrition_goals',rows);localStorage.setItem('nutri-setup','1');document.getElementById('wizard').style.display='none';toast('設定完成！');renderNutri();}
